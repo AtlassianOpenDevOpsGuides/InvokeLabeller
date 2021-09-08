@@ -1,0 +1,41 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+
+Globals:
+  Function:
+    Timeout: 30
+
+Resources:
+  ImageLabellerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/
+      Handler: app.lambda_handler
+      Runtime: python3.8
+      Timeout: 300
+      Policies:
+        - AmazonDynamoDBFullAccess
+        - AmazonS3FullAccess
+        - AdministratorAccess
+      Events:
+        DynamoDbStream:
+          Type: DynamoDB
+          Properties:
+            BisectBatchOnFunctionError: False
+            Enabled: True
+            StartingPosition: 'TRIM_HORIZON'
+            Stream:
+              Fn::ImportValue: 'ImageLabelStreamArn'
+      Tags:
+        Name: imageLabeller
+        business_unit: agile_devops_pmm
+        service_name: open_devops_image_rec
+        resource_owner: wmarusiak
+
+Outputs:
+  ImageLabellerFunction:
+    Description: 'Image Labeller Lambda Function ARN'
+    Value: !GetAtt ImageLabellerFunction.Arn
+  ImageLabellerFunctionIamRole:
+    Description: 'Implicit IAM Role created for Image Labeller function'
+    Value: !GetAtt ImageLabellerFunctionRole.Arn
