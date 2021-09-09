@@ -26,11 +26,6 @@ Resources:
             StartingPosition: 'TRIM_HORIZON'
             Stream:
               Fn::ImportValue: 'ImageLabelStreamArn'
-      Tags:
-        Name: imageLabeller
-        business_unit: agile_devops_pmm
-        service_name: open_devops_image_rec
-        resource_owner: wmarusiak
 
 Outputs:
   ImageLabellerFunction:
